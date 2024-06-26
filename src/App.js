@@ -5,7 +5,8 @@ import Navbar from "./components/Navbar";
 import Homepage from "./components/HomePage";
 import Footer from "./components/Footer";
 import Login from "./authtentication/Login";
-import SingUp from "./authtentication/SingUp";
+import SignUp from "./authtentication/SignUp";
+import UserDashboard from "./user/UserDashboard";
 
 const App = () => {
   return (
@@ -15,7 +16,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/singup" element={<SingUp />} />
+          <Route path="/singup" element={<SignUp />} />
+          <Route path="/userDashboard" element={<UserDashboard />} />
         </Routes>
         <Footer />
       </div>

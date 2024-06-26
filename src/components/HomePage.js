@@ -1,7 +1,8 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import "./Homepage.css"; // Import the CSS file
+import "./Homepage.css";
+import UserDashboard from "../user/UserDashboard";
 
 const Homepage = () => {
   return (
@@ -13,9 +14,9 @@ const Homepage = () => {
         </p>
         <hr className="my-4" />
         <p>O que pretendes fazer?</p>
-        <a className="btn btn-primary btn-lg mb-4" href="#" role="button">
+        <Link to="/UserDashboard" className="btn btn-primary mb-1">
           Ver o YU-GI
-        </a>
+        </Link>
       </div>
       <div className="row justify-content-center">
         <div className="col-md-4 d-flex align-items-stretch">
@@ -25,7 +26,7 @@ const Homepage = () => {
               <p className="card-text flex-grow-1">
                 Es um estudante que quer encontrar o estágio
               </p>
-              <Link to="login" className="btn btn-primary mb-1">
+              <Link to="SingUp" className="btn btn-primary mb-1">
                 Ver Estágio
               </Link>
               <img src="02.png" alt="" className="img-fluid mt-2" />
@@ -40,7 +41,7 @@ const Homepage = () => {
                 Uma empresa que procura oferecer estágio a estudantes que estão
                 à procura
               </p>
-              <Link to="login" className="btn btn-primary mb-1">
+              <Link to="SingUp" className="btn btn-primary mb-1">
                 Ver estudantes
               </Link>
               <img src="01.png" alt="" className="img-fluid mt-2" />

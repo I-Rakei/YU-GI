@@ -1,13 +1,24 @@
-import React from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { user } from "../firebase";
+import React, { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserDashboard = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <div className="container my-5">
-      <h1>Welcome to your Dashboard! {user}</h1>
-      <p>You are now logged in.</p>
+      <h1>Bem vindo ao Yugi {user ? user.email : "Guest"}</h1>
     </div>
   );
 };
