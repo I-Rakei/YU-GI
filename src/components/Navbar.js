@@ -1,41 +1,39 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Navbar = () => {
   return (
-    <nav className="sticky-top navbar navbar-expand-lg navbar-dark bg-dark p-3">
-      <a className="navbar-brand text-light" href="#">
-        YU-GI
-      </a>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-      <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav">
-          <li className="nav-item active">
-            <a className="nav-link text-light" href="#">
-              Home <span className="sr-only"></span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-light" href="#">
-              Quem somos?
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-light" href="#">
-              Contato
-            </a>
-          </li>
-        </ul>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <div className="container">
+        <Link className="navbar-brand" to="/">
+          YU-GI
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link className="nav-link" to="/quem-somos">
+                Quem somos?
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/contato">
+                Contato
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   );
