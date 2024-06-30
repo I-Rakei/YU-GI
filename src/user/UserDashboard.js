@@ -1,19 +1,30 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { auth, storage } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [previousProfilePicture, setPreviousProfilePicture] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleAuthStateChanged = (currentUser) => {
       setUser(currentUser);
-      if (!currentUser) {
+      if (currentUser) {
+        loadProfilePicture(currentUser.uid);
+      } else {
         navigate("/login");
       }
     };
@@ -34,6 +45,15 @@ const UserDashboard = () => {
       document.removeEventListener("keydown", resetTimeout);
     };
   }, [navigate]);
+
+  const loadProfilePicture = async (uid) => {
+    try {
+      const url = await getDownloadURL(ref(storage, `profile_pictures/${uid}`));
+      setProfilePicture(url);
+    } catch (error) {
+      console.error("Error loading profile picture: ", error);
+    }
+  };
 
   const resetTimeout = () => {
     if (timeoutRef.current) {
@@ -63,11 +83,49 @@ const UserDashboard = () => {
     setShowLogoutConfirm(false);
   };
 
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file && user) {
+      setUploading(true);
+      const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+      try {
+        if (profilePicture) {
+          await deleteObject(ref(storage, `profile_pictures/${user.uid}`));
+        }
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        setPreviousProfilePicture(profilePicture);
+        setProfilePicture(url);
+        setUploading(false);
+      } catch (error) {
+        console.error("Error uploading file: ", error);
+        setUploading(false);
+      }
+    }
+  };
+
   return (
     <div className="container my-5">
       <h1>Bem vindo ao Yugi {user ? user.email : "Guest"}</h1>
       {user && (
         <>
+          {profilePicture ? (
+            <img
+              src={profilePicture}
+              alt="Profile"
+              className="img-thumbnail mb-3"
+              style={{ width: "150px", height: "150px", objectFit: "cover" }}
+            />
+          ) : (
+            <p>No profile picture</p>
+          )}
+          <input
+            type="file"
+            className="form-control mb-3"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+          {uploading && <p>Uploading...</p>}
           <button
             className="btn btn-danger mt-3"
             onClick={handleShowLogoutConfirm}
