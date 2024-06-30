@@ -137,12 +137,21 @@ const Navbar = () => {
       }
     }
   };
+  const email = user?.email;
+  const prefix = email ? email.split("@")[0] : "";
+  const welcomeMessage = `Bem vindo ${prefix}`;
 
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
-          <h1>Bem vindo {`${user?.email}`}</h1>
+          <h1
+            style={{
+              fontWeight: "bold",
+              fontFamily:
+                "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif",
+            }}
+          >{`${welcomeMessage}`}</h1>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               {user && (
