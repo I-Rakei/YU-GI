@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
   ref,
@@ -14,39 +14,23 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showDoneModal, setShowDoneModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
-  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const handleAuthStateChanged = (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         loadProfilePicture(currentUser.uid);
       } else {
         navigate("/login");
       }
-    };
+    });
 
-    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChanged);
-
-    window.addEventListener("popstate", handleLogout);
-    resetTimeout();
-
-    document.addEventListener("click", resetTimeout);
-    document.addEventListener("keydown", resetTimeout);
-
-    return () => {
-      unsubscribe();
-      window.removeEventListener("popstate", handleLogout);
-      clearTimeout(timeoutRef.current);
-      document.removeEventListener("click", resetTimeout);
-      document.removeEventListener("keydown", resetTimeout);
-    };
+    return unsubscribe;
   }, [navigate]);
 
   const loadProfilePicture = async (uid) => {
@@ -58,15 +42,6 @@ const Navbar = () => {
     }
   };
 
-  const resetTimeout = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      handleLogout();
-    }, 10 * 60 * 1000); // 10 minutes
-  };
-
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -76,22 +51,6 @@ const Navbar = () => {
       .catch((error) => {
         console.error("Error signing out: ", error);
       });
-  };
-
-  const handleShowLogoutConfirm = () => {
-    setShowLogoutConfirm(true);
-  };
-
-  const handleCloseLogoutConfirm = () => {
-    setShowLogoutConfirm(false);
-  };
-
-  const handleShowUploadModal = () => {
-    setShowUploadModal(true);
-  };
-
-  const handleCloseUploadModal = () => {
-    setShowUploadModal(false);
   };
 
   const handleFileChange = (event) => {
@@ -124,11 +83,7 @@ const Navbar = () => {
             setProfilePicture(url);
             setUploading(false);
             setShowUploadModal(false);
-            setShowDoneModal(true);
-            setTimeout(() => {
-              setShowDoneModal(false);
-              window.location.reload();
-            }, 2000); // Display "Done" modal for 2 seconds before refreshing
+            window.location.reload();
           }
         );
       } catch (error) {
@@ -137,77 +92,61 @@ const Navbar = () => {
       }
     }
   };
+
   const email = user?.email;
   const prefix = email ? email.split("@")[0] : "";
   const welcomeMessage = `Bem vindo ${prefix}`;
 
   return (
-    <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <h1
-            style={{
-              fontWeight: "bold",
-              fontFamily:
-                "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif",
-            }}
-          >{`${welcomeMessage}`}</h1>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              {user && (
-                <>
-                  <li className="nav-item dropdown">
-                    <button
-                      className="btn nav-link dropdown-toggle"
-                      id="navbarDropdown"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      {profilePicture ? (
-                        <img
-                          src={profilePicture}
-                          alt="Profile"
-                          className="img-thumbnail"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        <p>No profile picture</p>
-                      )}
-                    </button>
-                    <ul
-                      className="dropdown-menu dropdown-menu-end"
-                      aria-labelledby="navbarDropdown"
-                    >
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={handleShowUploadModal}
-                        >
-                          Upload Picture
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={handleShowLogoutConfirm}
-                        >
-                          Logout
-                        </button>
-                      </li>
-                    </ul>
-                  </li>
-                </>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <h1 className="navbar-brand">{welcomeMessage}</h1>
+        {user && (
+          <div className="dropdown">
+            <button
+              className="btn dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {profilePicture ? (
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="img-thumbnail"
+                  style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                />
+              ) : (
+                "No profile picture"
               )}
+            </button>
+            <ul
+              className="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownMenuButton"
+            >
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => setShowUploadModal(true)}
+                >
+                  Upload Picture
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => setShowLogoutConfirm(true)}
+                >
+                  Logout
+                </button>
+              </li>
             </ul>
           </div>
-        </div>
-      </nav>
+        )}
+      </div>
 
+      {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="modal show" style={{ display: "block" }} tabIndex="-1">
           <div className="modal-dialog">
@@ -217,7 +156,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={handleCloseLogoutConfirm}
+                  onClick={() => setShowLogoutConfirm(false)}
                 ></button>
               </div>
               <div className="modal-body">
@@ -227,7 +166,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={handleCloseLogoutConfirm}
+                  onClick={() => setShowLogoutConfirm(false)}
                 >
                   Cancel
                 </button>
@@ -244,6 +183,7 @@ const Navbar = () => {
         </div>
       )}
 
+      {/* Upload Modal */}
       {showUploadModal && (
         <div className="modal show" style={{ display: "block" }} tabIndex="-1">
           <div className="modal-dialog">
@@ -253,7 +193,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={handleCloseUploadModal}
+                  onClick={() => setShowUploadModal(false)}
                 ></button>
               </div>
               <div className="modal-body">
@@ -282,7 +222,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={handleCloseUploadModal}
+                  onClick={() => setShowUploadModal(false)}
                   disabled={uploading}
                 >
                   Cancel
@@ -300,19 +240,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
-      {showDoneModal && (
-        <div className="modal show" style={{ display: "block" }} tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-body">
-                <h1>Done</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </nav>
   );
 };
 
