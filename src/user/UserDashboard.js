@@ -7,10 +7,11 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-import { auth, storage } from "../firebase";
+import { ref as dbRef, push, set, onValue, remove } from "firebase/database";
+import { auth, storage, database } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const Navbar = () => {
+const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -20,11 +21,19 @@ const Navbar = () => {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
+  // Post image functionality
+  const [postFile, setPostFile] = useState(null);
+  const [postPreview, setPostPreview] = useState(null);
+  const [postDescription, setPostDescription] = useState("");
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [posts, setPosts] = useState([]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         loadProfilePicture(currentUser.uid);
+        loadUserPosts(currentUser.uid);
       } else {
         navigate("/login");
       }
@@ -40,6 +49,22 @@ const Navbar = () => {
     } catch (error) {
       console.error("Error loading profile picture: ", error);
     }
+  };
+
+  const loadUserPosts = (uid) => {
+    const userPostsRef = dbRef(database, `posts/${uid}`);
+    onValue(userPostsRef, (snapshot) => {
+      const postsData = snapshot.val();
+      if (postsData) {
+        const postsArray = Object.entries(postsData).map(([key, value]) => ({
+          id: key,
+          ...value,
+        }));
+        setPosts(postsArray);
+      } else {
+        setPosts([]);
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -93,14 +118,78 @@ const Navbar = () => {
     }
   };
 
+  const handlePostFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    setPostFile(selectedFile);
+
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostPreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setPostPreview(null);
+    }
+  };
+
+  const handlePostUpload = async () => {
+    if (postFile && postDescription && user) {
+      setUploading(true);
+      const storageRef = ref(
+        storage,
+        `post_images/${user.uid}/${Date.now()}_${postFile.name}`
+      );
+
+      try {
+        const uploadTask = uploadBytesResumable(storageRef, postFile);
+        uploadTask.on("state_changed", null, null, async () => {
+          const downloadURL = await getDownloadURL(storageRef);
+          const newPostRef = push(dbRef(database, `posts/${user.uid}`));
+          await set(newPostRef, {
+            imageUrl: downloadURL,
+            description: postDescription,
+            timestamp: Date.now(),
+          });
+          setUploading(false);
+          setPostFile(null);
+          setPostPreview(null);
+          setPostDescription("");
+          setShowPostModal(false);
+        });
+      } catch (error) {
+        console.error("Error uploading post: ", error);
+        setUploading(false);
+      }
+    }
+  };
+
+  const handleDeletePost = async (postId, imageUrl) => {
+    if (user) {
+      try {
+        // Delete the image from storage
+        const imageRef = ref(storage, imageUrl);
+        await deleteObject(imageRef);
+
+        // Delete the post data from the database
+        await remove(dbRef(database, `posts/${user.uid}/${postId}`));
+
+        // Update the local state
+        setPosts(posts.filter((post) => post.id !== postId));
+      } catch (error) {
+        console.error("Error deleting post: ", error);
+      }
+    }
+  };
+
   const email = user?.email;
   const prefix = email ? email.split("@")[0] : "";
-  const welcomeMessage = `Bem vindo ${prefix}`;
+  const welcomeMessage = `Welcome ${prefix}`;
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container-fluid">
-        <h1 className="navbar-brand">{welcomeMessage}</h1>
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1>{welcomeMessage}</h1>
         {user && (
           <div className="dropdown">
             <button
@@ -130,7 +219,7 @@ const Navbar = () => {
                   className="dropdown-item"
                   onClick={() => setShowUploadModal(true)}
                 >
-                  Upload Picture
+                  Change Profile Picture
                 </button>
               </li>
               <li>
@@ -145,6 +234,42 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {user && (
+        <div className="card">
+          <div className="card-body">
+            <h2>Your Posts</h2>
+            <button
+              className="btn btn-success mb-3"
+              onClick={() => setShowPostModal(true)}
+            >
+              Create New Post
+            </button>
+            <div className="row">
+              {posts.map((post) => (
+                <div key={post.id} className="col-md-4 mb-3">
+                  <div className="card">
+                    <img
+                      src={post.imageUrl}
+                      alt={post.description}
+                      className="card-img-top"
+                    />
+                    <div className="card-body">
+                      <p className="card-text">{post.description}</p>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDeletePost(post.id, post.imageUrl)}
+                      >
+                        Delete Post
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
@@ -183,7 +308,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Upload Modal */}
+      {/* Profile Picture Upload Modal */}
       {showUploadModal && (
         <div className="modal show" style={{ display: "block" }} tabIndex="-1">
           <div className="modal-dialog">
@@ -240,8 +365,68 @@ const Navbar = () => {
           </div>
         </div>
       )}
-    </nav>
+
+      {/* Post Image Modal */}
+      {showPostModal && (
+        <div className="modal show" style={{ display: "block" }} tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Create New Post</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowPostModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="file"
+                  className="form-control mb-3"
+                  onChange={handlePostFileChange}
+                  accept="image/*"
+                  disabled={uploading}
+                />
+                {postPreview && (
+                  <img
+                    src={postPreview}
+                    alt="Preview"
+                    className="img-thumbnail mb-3"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                )}
+                <textarea
+                  className="form-control mb-3"
+                  value={postDescription}
+                  onChange={(e) => setPostDescription(e.target.value)}
+                  placeholder="Enter image description"
+                  disabled={uploading}
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowPostModal(false)}
+                  disabled={uploading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handlePostUpload}
+                  disabled={uploading || !postFile || !postDescription}
+                >
+                  {uploading ? "Uploading..." : "Post"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Navbar;
+export default UserDashboard;

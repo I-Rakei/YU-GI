@@ -2,7 +2,6 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import "./Homepage.css";
-import UserDashboard from "../user/UserDashboard";
 
 const Homepage = () => {
   return (
@@ -14,7 +13,7 @@ const Homepage = () => {
         </p>
         <hr className="my-4" />
         <p>O que pretendes fazer?</p>
-        <Link to="/UserDashboard" className="btn btn-primary mb-1">
+        <Link to="/all-posts" className="btn btn-primary mb-1">
           Ver o YU-GI
         </Link>
       </div>

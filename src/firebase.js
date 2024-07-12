@@ -1,24 +1,21 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAmf83EeDIp_FY-zOSzrwnMxKYHFVBKa24",
-  authDomain: "yu-gi-4a439.firebaseapp.com",
-  projectId: "yu-gi-4a439",
-  storageBucket: "yu-gi-4a439.appspot.com",
-  messagingSenderId: "939187531841",
-  appId: "1:939187531841:web:f5c57123d26edea81596c0",
-  measurementId: "G-B256R621WE",
+  apiKey: "AIzaSyCZaJZoRyBm7vsWXifYxqXFTmnIBW_nwv8",
+  authDomain: "yugi-image.firebaseapp.com",
+  databaseURL: "https://yugi-image-default-rtdb.firebaseio.com",
+  projectId: "yugi-image",
+  storageBucket: "yugi-image.appspot.com",
+  messagingSenderId: "964777937042",
+  appId: "1:964777937042:web:25a459249bcfc70a587e4b",
+  measurementId: "G-1369MMY3ZY",
 };
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const storage = getStorage(app);
+export const database = getDatabase(app);
 
-const auth = getAuth(app);
-const storage = getStorage(app);
-const firestore = getFirestore(app);
-export const db = getFirestore(app);
-
-export { auth, storage, firestore };
+export default app;

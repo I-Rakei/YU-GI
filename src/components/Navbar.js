@@ -7,9 +7,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
       <div className="container">
-        <Link className="navbar-brand" to="/">
-          YU-GI
-        </Link>
+        <h1 style={{ color: "white" }}>YU-GI</h1>
         <button
           className="navbar-toggler"
           type="button"
@@ -24,13 +22,13 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/quem-somos">
-                Quem somos?
+              <Link className="nav-link" to="/all-posts">
+                Posts Gerais
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/contato">
-                Contato
+              <Link className="nav-link" to="/dashboard">
+                Prefil
               </Link>
             </li>
           </ul>
