@@ -7,7 +7,12 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
       <div className="container">
-        <h1 style={{ color: "white" }}>YU-GI</h1>
+        <img
+          src={`${process.env.PUBLIC_URL}/logo.png`}
+          alt="Logo"
+          className="d-inline-block align-text-top"
+        />
+        <h1 style={{ color: "white", marginLeft: "14px" }}>YU-GI</h1>
         <button
           className="navbar-toggler"
           type="button"

@@ -21,7 +21,7 @@ const Login = () => {
       );
       const user = userCredential.user;
       console.log(user);
-      navigate("/UserDashboard");
+      navigate("/dashboard");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
