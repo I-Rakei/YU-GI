@@ -150,6 +150,7 @@ const UserDashboard = () => {
             imageUrl: downloadURL,
             description: postDescription,
             timestamp: Date.now(),
+            userEmail: user.email,
           });
           setUploading(false);
           setPostFile(null);

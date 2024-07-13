@@ -56,7 +56,7 @@ const AllPosts = () => {
                   <p className="card-text">{post.description}</p>
                   <p className="card-text">
                     <small className="text-muted">
-                      Posted by: {post.userId}
+                      Posted by: {post.userEmail.split("@")[0]}
                       <br />
                       Date: {new Date(post.timestamp).toLocaleString()}
                     </small>
