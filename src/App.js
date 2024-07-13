@@ -7,8 +7,7 @@ import Footer from "./components/Footer";
 import Login from "./authtentication/Login";
 import SignUp from "./authtentication/SignUp";
 import UserDashboard from "./user/UserDashboard";
-import AllPosts from "./MainPost/AllPosts"; // Import the new component
-
+import AllPosts from "./MainPost/AllPosts";
 const App = () => {
   return (
     <Router>
@@ -20,7 +19,6 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/all-posts" element={<AllPosts />} />{" "}
-          {/* New route for AllPosts */}
         </Routes>
         <Footer />
       </div>
