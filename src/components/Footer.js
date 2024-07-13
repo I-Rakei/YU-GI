@@ -5,7 +5,7 @@ import "./Homepage.css";
 
 const Footer = () => {
   return (
-    <footer className="text-center text-lg-start bg-dark text-light p-3 ">
+    <footer className="text-center text-lg-start bg-dark text-light mt-5">
       {/* Section: Social media */}
       <section className="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
         {/* Left */}
@@ -60,12 +60,12 @@ const Footer = () => {
               {/* Links */}
               <h6 className="text-uppercase fw-bold mb-4">Sobre-nos</h6>
               <p>
-                <a href="#!" className="text-reset">
+                <a href="#" className="text-reset">
                   A missao do Yu-Gi
                 </a>
               </p>
               <p>
-                <a href="#!" className="text-reset">
+                <a href="#" className="text-reset">
                   Quem criou?
                 </a>
               </p>
@@ -77,7 +77,7 @@ const Footer = () => {
               {/* Links */}
               <h6 className="text-uppercase fw-bold mb-4">Q&A</h6>
               <p>
-                <a href="#!" className="text-reset">
+                <a href="#" className="text-reset">
                   Ajuda
                 </a>
               </p>

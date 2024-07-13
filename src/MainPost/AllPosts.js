@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./AllPosts.css"; // Import the custom CSS file
 
 const AllPosts = () => {
   const [allPosts, setAllPosts] = useState([]);
@@ -34,7 +35,16 @@ const AllPosts = () => {
   }, []);
 
   if (loading) {
-    return <div className="container mt-4">Loading posts...</div>;
+    return (
+      <div
+        className="container mt-4 d-flex justify-content-center align-items-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -50,7 +60,7 @@ const AllPosts = () => {
                 <img
                   src={post.imageUrl}
                   alt={post.description}
-                  className="card-img-top"
+                  className="card-img-top post-image"
                 />
                 <div className="card-body">
                   <p className="card-text">{post.description}</p>

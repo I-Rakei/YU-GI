@@ -393,7 +393,7 @@ const UserDashboard = () => {
                     src={postPreview}
                     alt="Preview"
                     className="img-thumbnail mb-3"
-                    style={{ maxWidth: "100%", height: "auto" }}
+                    style={{ maxWidth: "100%", height: "500px" }}
                   />
                 )}
                 <textarea
