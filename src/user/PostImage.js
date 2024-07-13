@@ -11,7 +11,7 @@ const PostImage = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const userPostsRef = dbRef(database, `posts/${auth.currentUser.uid}`);
+    const userPostsRef = dbRef(database, `posts/${auth.currentUser.email}`);
     const unsubscribe = onValue(userPostsRef, (snapshot) => {
       const postsData = snapshot.val();
       if (postsData) {
@@ -48,7 +48,7 @@ const PostImage = () => {
       setUploading(true);
       const storageRef = ref(
         storage,
-        `post_images/${auth.currentUser.uid}/${Date.now()}_${file.name}`
+        `post_images/${auth.currentUser.email}/${Date.now()}_${file.name}`
       );
 
       try {
@@ -56,12 +56,13 @@ const PostImage = () => {
         uploadTask.on("state_changed", null, null, async () => {
           const downloadURL = await getDownloadURL(storageRef);
           const newPostRef = push(
-            dbRef(database, `posts/${auth.currentUser.uid}`)
+            dbRef(database, `posts/${auth.currentUser.email}`)
           );
           await set(newPostRef, {
             imageUrl: downloadURL,
             description: description,
             timestamp: Date.now(),
+            userEmail: auth.currentUser.email,
           });
           setUploading(false);
           setFile(null);
