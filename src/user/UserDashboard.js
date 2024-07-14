@@ -10,9 +10,11 @@ import {
 import { ref as dbRef, push, set, onValue, remove } from "firebase/database";
 import { auth, storage, database } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./UserDashboard.css"; // Import the CSS file
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
@@ -34,6 +36,7 @@ const UserDashboard = () => {
       if (currentUser) {
         loadProfilePicture(currentUser.uid);
         loadUserPosts(currentUser.uid);
+        loadUserData(currentUser.uid);
       } else {
         navigate("/login");
       }
@@ -41,6 +44,17 @@ const UserDashboard = () => {
 
     return unsubscribe;
   }, [navigate]);
+
+  const loadUserData = async (uid) => {
+    const userRef = dbRef(database, `users/${uid}`);
+    onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setUserData(snapshot.val());
+      } else {
+        setUserData(null);
+      }
+    });
+  };
 
   const loadProfilePicture = async (uid) => {
     try {
@@ -183,9 +197,10 @@ const UserDashboard = () => {
     }
   };
 
-  const email = user?.email;
-  const prefix = email ? email.split("@")[0] : "";
-  const welcomeMessage = `Welcome ${prefix}`;
+  const welcomeMessage =
+    userData && userData.username && userData.profession
+      ? `Welcome ${userData.profession}: ${userData.username}`
+      : "Welcome";
 
   return (
     <div className="container mt-4">
@@ -246,7 +261,9 @@ const UserDashboard = () => {
             >
               Create New Post
             </button>
-            <div className="row">
+            <div
+              className={`row ${posts.length === 0 ? "post-container" : ""}`}
+            >
               {posts.map((post) => (
                 <div key={post.id} className="col-md-4 mb-3">
                   <div className="card">

@@ -3,3 +3,6 @@
   object-fit: cover;
   width: 100%;
 }
+.post-container {
+  min-height: 400px;
+}

@@ -7,7 +7,9 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
       <div className="container">
-        <h1 style={{ color: "white", marginLeft: "14px" }}>YU-GI</h1>
+        <Link className="navbar-brand" to="/">
+          <h1 style={{ color: "white", marginLeft: "14px" }}>YU-GI</h1>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"

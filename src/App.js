@@ -7,7 +7,9 @@ import Footer from "./components/Footer";
 import Login from "./authtentication/Login";
 import SignUp from "./authtentication/SignUp";
 import UserDashboard from "./user/UserDashboard";
-import AllPosts from "./MainPost/AllPosts";
+import AllPostsWithSearch from "./MainPost/AllPostsWithSearch"; // Import the new combined component
+import UserProfile from "./components/UserProfile";
+
 const App = () => {
   return (
     <Router>
@@ -18,7 +20,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/all-posts" element={<AllPosts />} />{" "}
+          <Route path="/all-posts" element={<AllPostsWithSearch />} />
+          <Route path="/profile/:userId" element={<UserProfile />} />
         </Routes>
         <Footer />
       </div>
