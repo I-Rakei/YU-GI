@@ -10,7 +10,7 @@ import {
 import { ref as dbRef, push, set, onValue, remove } from "firebase/database";
 import { auth, storage, database } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./UserDashboard.css"; // Import the CSS file
+import "./UserDashboard.css";
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
