@@ -11,12 +11,16 @@ import {
 } from "firebase/database";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faUser,
+  faUsersBetweenLines,
+  faBuilding,
+} from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AllPosts.css";
 
-// Styled components (keep as is)
 const SearchWrapper = styled.div`
   position: relative;
 `;
@@ -64,6 +68,41 @@ const Username = styled.div`
 const UserDetails = styled.div`
   font-size: 0.875rem;
   color: #6c757d;
+`;
+
+const MainContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const IconsContainer = styled.div`
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .icon-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+    margin-bottom: 1rem;
+  }
+
+  .icon-link:hover {
+    text-decoration: underline;
+  }
+
+  .icon-size {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+`;
+
+const PostsContainer = styled.div`
+  width: 75%;
+  height: 800px;
+  overflow-y: auto;
 `;
 
 const AllPostsWithSearch = () => {
@@ -274,33 +313,53 @@ const AllPostsWithSearch = () => {
       </SearchWrapper>
 
       <h1 className="mb-4">All Posts</h1>
-      {allPosts.length === 0 ? (
-        <p>No posts available.</p>
-      ) : (
-        <div className="row">
-          {allPosts.map((post) => (
-            <div key={post.id} className="col-md-4 mb-4">
-              <div className="card">
-                <img
-                  src={post.imageUrl}
-                  alt={post.description}
-                  className="card-img-top post-image"
-                />
-                <div className="card-body">
-                  <p className="card-text">{post.description}</p>
-                  <p className="card-text">
-                    <small className="text-muted">
-                      Posted by: {post.username}
-                      <br />
-                      Date: {new Date(post.timestamp).toLocaleString()}
-                    </small>
-                  </p>
+      <MainContainer>
+        <IconsContainer>
+          <Link to="/users" className="icon-link icon-size">
+            <FontAwesomeIcon icon={faUsersBetweenLines} />
+            <span> Estagiários</span>
+          </Link>
+          <Link to="/empresas" className="icon-link icon-size">
+            <FontAwesomeIcon icon={faBuilding} />
+            <span> Empresas</span>
+          </Link>
+        </IconsContainer>
+
+        <PostsContainer className="bg-light posts-border">
+          {allPosts.length === 0 ? (
+            <p>No posts available.</p>
+          ) : (
+            <div className="post-list">
+              {allPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="mb-4"
+                  style={{ maxWidth: "500px", margin: "0 auto" }}
+                >
+                  <div className="card" style={{ width: "100%" }}>
+                    <img
+                      src={post.imageUrl}
+                      alt={post.description}
+                      className="card-img-top post-image"
+                      style={{ height: "200px", objectFit: "cover" }}
+                    />
+                    <div className="card-body">
+                      <p className="card-text">{post.description}</p>
+                      <p className="card-text">
+                        <small className="text-muted">
+                          Posted by: {post.username}
+                          <br />
+                          Date: {new Date(post.timestamp).toLocaleString()}
+                        </small>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </PostsContainer>
+      </MainContainer>
     </div>
   );
 };
