@@ -25,7 +25,7 @@ const Homepage = () => {
               <p className="card-text flex-grow-1">
                 Es um estudante que quer encontrar o estágio
               </p>
-              <Link to="signup" className="btn btn-primary mb-1">
+              <Link to="login" className="btn btn-primary mb-1">
                 Ver Estágio
               </Link>
               <img src="02.png" alt="" className="img-fluid mt-2" />
@@ -40,7 +40,7 @@ const Homepage = () => {
                 Uma empresa que procura oferecer estágio a estudantes que estão
                 à procura
               </p>
-              <Link to="signup" className="btn btn-primary mb-1">
+              <Link to="login/co" className="btn btn-primary mb-1">
                 Ver estudantes
               </Link>
               <img src="01.png" alt="" className="img-fluid mt-2" />

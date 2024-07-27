@@ -73,13 +73,15 @@ const UserDetails = styled.div`
 const MainContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 `;
 
 const IconsContainer = styled.div`
-  width: 20%;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 1rem;
 
   .icon-link {
     display: flex;
@@ -97,12 +99,23 @@ const IconsContainer = styled.div`
     font-size: 1.5rem;
     margin-right: 0.5rem;
   }
+
+  @media (min-width: 768px) {
+    width: 20%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 `;
 
 const PostsContainer = styled.div`
-  width: 75%;
+  width: 100%;
   height: 800px;
   overflow-y: auto;
+
+  @media (min-width: 768px) {
+    width: 75%;
+  }
 `;
 
 const AllPostsWithSearch = () => {
@@ -315,7 +328,7 @@ const AllPostsWithSearch = () => {
       <h1 className="mb-4">All Posts</h1>
       <MainContainer>
         <IconsContainer>
-          <Link to="/users" className="icon-link icon-size">
+          <Link to="/estagiarios" className="icon-link icon-size">
             <FontAwesomeIcon icon={faUsersBetweenLines} />
             <span> Estagiários</span>
           </Link>
