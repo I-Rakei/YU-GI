@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { ref, get, child } from "firebase/database";
+import { auth, database } from "../firebase";
 import { NavLink, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -21,7 +22,34 @@ const Login = () => {
       );
       const user = userCredential.user;
       console.log(user);
-      navigate("/dashboard");
+
+      // Reference to the database
+      const dbRef = ref(database);
+
+      // Check if the user is in "users" or "Companies"
+      get(child(dbRef, `users/${user.uid}`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            navigate("/dashboard");
+          } else {
+            get(child(dbRef, `Companies/${user.uid}`))
+              .then((snapshot) => {
+                if (snapshot.exists()) {
+                  navigate("/dashboard/co");
+                } else {
+                  setError("User does not exist in users or Companies.");
+                }
+              })
+              .catch((error) => {
+                setError("Error fetching company data: " + error.message);
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          setError("Error fetching user data: " + error.message);
+          console.log(error);
+        });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;

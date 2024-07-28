@@ -9,9 +9,7 @@ import SignUp from "./authtentication/SignUp";
 import UserDashboard from "./user/UserDashboard";
 import AllPostsWithSearch from "./MainPost/AllPostsWithSearch"; // Import the new combined component
 import UserProfile from "./components/UserProfile";
-import SingupCo from "./authtentication/SignUpCo";
 import ProfileComponentCo from "./user/ProfileComponentCo";
-import LoginCo from "./authtentication/LoginCo";
 import ShowUsers from "./BrowsBase/ShowUsers";
 import ShowCompanies from "./BrowsBase/ShowCompanies";
 import CompanyProfile from "./components/CompanyProfile";
@@ -25,10 +23,8 @@ const App = () => {
           <Route path="/empresas" element={<ShowCompanies />} />
           <Route path="/dashboard/co" element={<ProfileComponentCo />} />
           <Route path="/" element={<Homepage />} />
-          <Route path="/login/co" element={<LoginCo />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/signup/co" element={<SingupCo />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/all-posts" element={<AllPostsWithSearch />} />
           <Route path="/profile/:userId" element={<UserProfile />} />

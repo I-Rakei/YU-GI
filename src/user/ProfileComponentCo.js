@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ref, get, update } from "firebase/database";
 import { database, storage } from "../firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   ref as storageRef,
   uploadBytesResumable,
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProfileComponentCo = () => {
@@ -19,6 +20,8 @@ const ProfileComponentCo = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const auth = getAuth();
@@ -123,6 +126,20 @@ const ProfileComponentCo = () => {
     setUploading(false);
   };
 
+  const toggleDropdown = () => {
+    dropdownRef.current.classList.toggle("show");
+  };
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+    await signOut(auth);
+    navigate("/login");
+  };
+
+  const handleUpdateProfile = () => {
+    navigate(`/update-profile`);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -154,8 +171,8 @@ const ProfileComponentCo = () => {
         <div className="card-body bg-info bg-gradient">
           <div className="d-flex">
             <div
-              className="profile-picture-container "
-              onClick={() => handleClick("profileImage")}
+              className="profile-picture-container position-relative"
+              onClick={toggleDropdown}
               style={{ cursor: "pointer" }}
             >
               <img
@@ -163,10 +180,22 @@ const ProfileComponentCo = () => {
                   companyData.profileImage || "https://via.placeholder.com/100"
                 }
                 alt="Profile"
-                className=" profile-image"
+                className="profile-image"
                 width="100px"
                 style={{ borderRadius: "5px" }}
               />
+              <div
+                ref={dropdownRef}
+                className="dropdown-menu dropdown-menu-end"
+                style={{ position: "absolute", top: "110%", right: 0 }}
+              >
+                <button className="dropdown-item" onClick={handleUpdateProfile}>
+                  Update Profile
+                </button>
+                <button className="dropdown-item" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
             </div>
             <div className="profile-info ms-3">
               <h2>{companyData.companyName}</h2>
@@ -240,10 +269,14 @@ const ProfileComponentCo = () => {
         .profile-picture-container {
           max-width: 100px;
           margin-right: 10px;
+          position: relative;
         }
         .profile-image {
           max-width: 100%;
           height: auto;
+        }
+        .dropdown-menu.show {
+          display: block;
         }
         .popup-overlay {
           position: fixed;
