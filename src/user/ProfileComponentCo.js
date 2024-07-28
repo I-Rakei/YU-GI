@@ -10,6 +10,7 @@ import {
 } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import PostCreationComponent from "./PostCreationComponent";
 
 const ProfileComponentCo = () => {
   const [companyData, setCompanyData] = useState(null);
@@ -20,6 +21,14 @@ const ProfileComponentCo = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    companyName: "",
+    companyAddress: "",
+    email: "",
+    foundationDate: "",
+  });
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -32,7 +41,14 @@ const ProfileComponentCo = () => {
           const companyRef = ref(database, `Companies/${user.uid}`);
           const snapshot = await get(companyRef);
           if (snapshot.exists()) {
-            setCompanyData(snapshot.val());
+            const data = snapshot.val();
+            setCompanyData(data);
+            setProfileData({
+              companyName: data.companyName,
+              companyAddress: data.companyAddress,
+              email: data.email,
+              foundationDate: data.foundationDate,
+            });
           } else {
             setError("No company data available");
           }
@@ -136,8 +152,41 @@ const ProfileComponentCo = () => {
     navigate("/login");
   };
 
-  const handleUpdateProfile = () => {
-    navigate(`/update-profile`);
+  const handleEditProfile = () => {
+    setIsEditing(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      setError("No user logged in");
+      return;
+    }
+
+    try {
+      const companyRef = ref(database, `Companies/${user.uid}`);
+      await update(companyRef, profileData);
+      setCompanyData((prevData) => ({
+        ...prevData,
+        ...profileData,
+      }));
+      setIsEditing(false);
+    } catch (err) {
+      setError("Error updating profile");
+      console.error(err);
+    }
   };
 
   if (loading) {
@@ -172,7 +221,7 @@ const ProfileComponentCo = () => {
           <div className="d-flex">
             <div
               className="profile-picture-container position-relative"
-              onClick={toggleDropdown}
+              onClick={() => handleClick("profileImage")}
               style={{ cursor: "pointer" }}
             >
               <img
@@ -184,18 +233,6 @@ const ProfileComponentCo = () => {
                 width="100px"
                 style={{ borderRadius: "5px" }}
               />
-              <div
-                ref={dropdownRef}
-                className="dropdown-menu dropdown-menu-end"
-                style={{ position: "absolute", top: "110%", right: 0 }}
-              >
-                <button className="dropdown-item" onClick={handleUpdateProfile}>
-                  Update Profile
-                </button>
-                <button className="dropdown-item" onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
             </div>
             <div className="profile-info ms-3">
               <h2>{companyData.companyName}</h2>
@@ -205,6 +242,14 @@ const ProfileComponentCo = () => {
                 Foundation Date:{" "}
                 {new Date(companyData.foundationDate).toLocaleDateString()}
               </p>
+            </div>
+            <div className="ms-auto">
+              <button className="btn btn-primary" onClick={handleEditProfile}>
+                Edit Profile
+              </button>
+              <button className="btn btn-secondary ms-2" onClick={handleLogout}>
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -256,6 +301,83 @@ const ProfileComponentCo = () => {
           </div>
         </div>
       )}
+
+      {isEditing && (
+        <div className="mt-4">
+          <h2>Edit Profile</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="companyName" className="form-label">
+                Company Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="companyName"
+                name="companyName"
+                value={profileData.companyName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="companyAddress" className="form-label">
+                Company Address
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="companyAddress"
+                name="companyAddress"
+                value={profileData.companyAddress}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={profileData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="foundationDate" className="form-label">
+                Foundation Date
+              </label>
+              <input
+                type="date"
+                className="form-control"
+                id="foundationDate"
+                name="foundationDate"
+                value={profileData.foundationDate}
+                onChange={handleChange}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Save
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary ms-2"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <PostCreationComponent
+          showPostModal={showPostModal}
+          setShowPostModal={setShowPostModal}
+        />
+      </div>
 
       <style jsx>{`
         .header-image-container {
