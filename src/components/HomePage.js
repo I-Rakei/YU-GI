@@ -1,6 +1,6 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./Homepage.css";
 
 const Homepage = () => {
@@ -18,32 +18,18 @@ const Homepage = () => {
         </Link>
       </div>
       <div className="row justify-content-center">
-        <div className="col-md-4 d-flex align-items-stretch">
+        <div className="col-md-6 d-flex align-items-stretch">
           <div className="card mb-4 card-hover shadow-sm">
             <div className="card-body d-flex flex-column">
-              <h5 className="card-title">Procurar Estágio</h5>
+              <h5 className="card-title">Procurar ou Fornecer Estágio</h5>
               <p className="card-text flex-grow-1">
-                Es um estudante que quer encontrar o estágio
+                Quer seja um estudante à procura de estágio ou uma empresa a
+                oferecer estágios, estás no sítio certo.
               </p>
               <Link to="login" className="btn btn-primary mb-1">
-                Ver Estágio
+                Ver Estágios
               </Link>
               <img src="02.png" alt="" className="img-fluid mt-2" />
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4 d-flex align-items-stretch">
-          <div className="card mb-4 card-hover shadow-sm">
-            <div className="card-body d-flex flex-column">
-              <h5 className="card-title">Fornecer estágio</h5>
-              <p className="card-text flex-grow-1">
-                Uma empresa que procura oferecer estágio a estudantes que estão
-                à procura
-              </p>
-              <Link to="login/co" className="btn btn-primary mb-1">
-                Ver estudantes
-              </Link>
-              <img src="01.png" alt="" className="img-fluid mt-2" />
             </div>
           </div>
         </div>
