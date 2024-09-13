@@ -4,7 +4,7 @@ import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCZaJZoRyBm7vsWXifYxqXFTmnIBW_nwv8",
+  apiKey: "#",
   authDomain: "yugi-image.firebaseapp.com",
   databaseURL: "https://yugi-image-default-rtdb.firebaseio.com",
   projectId: "yugi-image",
